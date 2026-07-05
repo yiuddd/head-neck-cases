@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>头颈病例分析 Watch版</title>
+<style>
+:root{--bg:#07080b;--card:#171820;--text:#f6f6f8;--muted:#aeb0bb;--accent:#54a8ff;--ans:#50df7a;--warn:#ffd36e;}
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:18px;line-height:1.5}
+.wrap{max-width:430px;margin:0 auto}
+.top{position:sticky;top:0;background:linear-gradient(var(--bg) 86%,transparent);padding:4px 0 8px;z-index:2}
+.nav{display:flex;gap:7px;align-items:center;justify-content:space-between}
+button,select{border:0;border-radius:12px;padding:9px 10px;background:#2b2d38;color:var(--text);font-size:16px}
+button{min-width:58px;font-weight:700}
+select{width:120px}
+.meta{color:var(--muted);font-size:15px;margin-top:6px}
+.card{background:var(--card);border-radius:18px;padding:14px;margin-top:8px;box-shadow:0 0 0 1px rgba(255,255,255,.07) inset}
+h1{font-size:21px;margin:0 0 10px;color:var(--accent)}
+.section{margin-top:12px}
+.label{color:var(--warn);font-weight:800;margin-bottom:4px}
+.case{white-space:pre-wrap}
+.q{margin:7px 0;padding:8px;border-radius:12px;background:#222431}
+.ans{display:none;white-space:pre-wrap;margin-top:10px;padding:12px;border-radius:12px;background:#15361f;color:#dcffe6;font-size:17px}
+.primary{background:var(--accent);color:white;width:100%;margin-top:10px}
+.hint{font-size:14px;color:var(--muted);margin-top:8px}
+.footer{height:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="nav">
+      <button onclick="prevCase()">←</button>
+      <select id="sel" onchange="goCase()"></select>
+      <button onclick="nextCase()">→</button>
+    </div>
+    <div class="meta" id="meta"></div>
+  </div>
+  <div class="card">
+    <h1 id="title"></h1>
+    <div class="section">
+      <div class="label">病例</div>
+      <div class="case" id="caseText"></div>
+    </div>
+    <div class="section">
+      <div class="label">问题</div>
+      <div id="questions"></div>
+    </div>
+    <button class="primary" onclick="toggleAnswer()">显示 / 隐藏答案</button>
+    <div class="ans" id="answer"></div>
+    <div class="hint">提示：手表上用 ← → 切换病例，答案默认隐藏。</div>
+  </div>
+  <div class="footer"></div>
+</div>
+<script>
+const cases=[{"title": "病例一：腮腺手术后面神经损伤", "case": "患者，男，52岁。因左侧腮腺浅叶多形性腺瘤行“腮腺浅叶切除术”。术后第2天，患者出现左侧额纹消失、左眼闭合不全、鼻唇沟变浅、鼓腮漏气、口角向右侧歪斜。", "questions": ["手术中损伤了哪条神经？该神经出颅的解剖位置是什么？", "该神经在腮腺内的走行特点及分段如何？", "根据上述体征，请具体判断损伤了该神经的哪些分支？", "为什么腮腺手术时面神经容易被损伤？解剖学上如何寻找面神经主干？"], "answer": "1. 损伤的是面神经（第Ⅶ脑神经），面神经经茎乳孔出颅。\n\n2. 面神经出茎乳孔后进入腮腺，在腮腺内分为上下两干，形成腮腺丛，最后发出五大终支：颞支、颧支、颊支、下颌缘支、颈支。\n\n3. 额纹消失提示颞支损伤；左眼闭合不全提示颞支、颧支损伤；鼻唇沟变浅、鼓腮漏气提示颊支损伤；口角向健侧歪斜提示下颌缘支损伤。\n\n4. 因面神经穿行腮腺并在腮腺内分支复杂，腮腺手术时容易损伤。寻找面神经主干可依据茎乳孔、耳屏尖、乳突及二腹肌后腹等解剖标志。"}, {"title": "病例二：面部危险三角感染", "case": "患者，男，19岁。左上唇鼻翼根部有一疖肿，自行挤压后，次日出现高热（39℃）、头痛、左眼睑水肿、结膜充血。体格检查：左上唇红肿区有压痛，无波动感。血常规示白细胞显著增高。", "questions": ["该患者最危险的并发症是什么？解剖学上该区域被称为什么？", "面部危险三角区的静脉有何特点？与颅内何处相通？", "感染通过哪条具体途径进入颅内？请写出静脉交通路径。", "临床上为什么禁止挤压危险三角区的疖肿？"], "answer": "1. 最危险的并发症是海绵窦血栓性静脉炎或颅内感染。该区域称为面部危险三角，即鼻根至两侧口角之间的区域。\n\n2. 面静脉无静脉瓣，血流可逆，并与颅内海绵窦交通。\n\n3. 感染可经：面静脉 → 内眦静脉 → 眼上静脉或眼下静脉 → 海绵窦；也可经：面静脉 → 面深静脉 → 翼静脉丛 → 导血管 → 海绵窦。\n\n4. 挤压疖肿可使感染沿无瓣膜静脉逆流进入海绵窦，引起海绵窦血栓、脑膜炎等严重颅内感染。"}, {"title": "病例三：头皮裂伤", "case": "患者，男，35岁。工地作业时不慎被铁钩划伤头顶部，伤口长约6cm，深达骨膜，出血量较大，呈喷射状。患者意识清楚，无恶心呕吐。急诊行头部伤口清创缝合术。", "questions": ["头皮由哪几层组成？该患者的伤口深及骨膜，说明伤及了哪几层？", "头皮出血为什么较多？止血困难的原因是什么？", "缝合时为什么要强调将帽状腱膜层严密缝合？", "若该伤口为横向（冠状方向）裂伤，伤口裂开程度与纵向裂伤有何不同？为什么？"], "answer": "1. 头皮由五层组成：皮肤、浅筋膜、帽状腱膜、腱膜下疏松结缔组织、颅骨外膜。伤口深达骨膜，说明伤及上述五层。\n\n2. 头皮血管丰富，吻合广泛；血管壁被浅筋膜内致密结缔组织固定，断裂后不易回缩，因此出血多且止血困难。\n\n3. 帽状腱膜是头皮的重要支持层，若不严密缝合，创口易裂开，影响愈合并形成明显瘢痕。\n\n4. 横向裂伤裂开程度通常比纵向裂伤更明显，因为额肌和枕肌牵拉帽状腱膜，使创缘向两侧分离。"}, {"title": "病例四：头皮皮瓣修复", "case": "患者，女，48岁。因左侧前额部基底细胞癌行肿瘤扩大切除术，术后遗留约4cm×5cm的皮肤缺损。拟采用局部旋转皮瓣修复创面，皮瓣蒂设计在左侧颞浅动脉供血区。", "questions": ["颅顶部的动脉血供来源于哪些动脉系统？它们之间有什么特点？", "为什么皮瓣的蒂部设计在下方（颞侧）而不是上方？", "颞浅动脉的体表投影位置在哪里？术中如何定位？", "若术中损伤了耳颞神经，患者术后可能出现什么症状？"], "answer": "1. 颅顶部血供来自颈内动脉系统和颈外动脉系统。颈内动脉系统包括滑车上动脉、眶上动脉；颈外动脉系统包括颞浅动脉、耳后动脉、枕动脉。它们吻合丰富，形成动脉网。\n\n2. 颅顶部主要血管多由下方向上进入头皮，皮瓣蒂设计在下方或颞侧可保留主要血供，提高皮瓣成活率。\n\n3. 颞浅动脉位于耳屏前约1cm，在颧弓根部附近可触及搏动，术中可据此定位。\n\n4. 损伤耳颞神经可出现颞区、耳前区感觉减退或麻木，腮腺区感觉异常，或耳颞区疼痛。"}, {"title": "病例五：下颌下腺肿物", "case": "患者，女性，27岁。主诉：发现左侧颌下腺无痛性肿物1月。现病史：患者1月前无意摸到左侧颌下一肿块，约“冬枣”大小，无不适。当地医院超声检查示左侧颌下腺实性占位。查体：面型对称，张口无歪斜，左侧颌下区无膨隆，双合诊左侧颌下腺内可触及一肿物，约2cm×1.5cm大小，可活动，无触痛。", "questions": ["下颌下腺的位置及毗邻关系是什么？", "下颌下腺手术中易损伤哪些重要神经？", "为什么要进行双合诊检查？", "下颌下腺导管开口在哪里？"], "answer": "1. 下颌下腺位于下颌下三角内，分浅部和深部，绕下颌舌骨肌后缘相连。其周围有面动脉、面静脉、舌神经、舌下神经、下颌下神经节等结构。\n\n2. 手术中应注意保护舌神经、舌下神经及面神经下颌缘支。\n\n3. 双合诊可判断肿物是否位于腺体内、与口底及下颌下腺深部的关系，并判断其活动度和范围。\n\n4. 下颌下腺管开口于舌下阜。"}, {"title": "病例六：甲状腺癌及术后声音嘶哑", "case": "患者，女性，58岁。颈部前方有一肿块，声音嘶哑；时常感觉呼吸困难、吞咽困难。体检显示甲状腺左侧有一个坚硬的肿块，随吞咽上下移动。B超检查显示甲状腺左叶有一结节。穿刺活检发现甲状腺癌细胞。治疗行甲状腺次全切除术，术后病人出现说话声音嘶哑。", "questions": ["什么是甲状腺次全切除术？", "为什么甲状腺结节肿块随吞咽上下移动？", "为何会影响呼吸、吞咽和发音？", "甲状腺切除术中应注意避免损伤哪些结构？为什么？", "基于甲状腺淋巴回流，癌细胞可能转移到哪些淋巴结？"], "answer": "1. 甲状腺次全切除术是切除大部分甲状腺组织，仅保留少量正常甲状腺组织的手术方式。\n\n2. 甲状腺被气管前筋膜包绕形成甲状腺鞘，并借甲状腺悬韧带连于喉和气管，因此吞咽时可随喉上下移动。\n\n3. 肿块压迫气管可导致呼吸困难；压迫食管可导致吞咽困难；侵犯或压迫喉返神经可导致声音嘶哑。\n\n4. 手术中应避免损伤喉返神经、喉上神经外支、甲状旁腺及甲状腺上下血管。喉返神经损伤可致声音嘶哑甚至呼吸困难；喉上神经外支损伤可致声调降低；甲状旁腺损伤可导致低钙抽搐；血管损伤可导致出血。\n\n5. 癌细胞可能转移至喉前淋巴结、气管前淋巴结、气管旁淋巴结及颈深淋巴结。"}];
+let idx=Number(localStorage.getItem("case_idx")||0);
+if(idx<0||idx>=cases.length)idx=0;
+const sel=document.getElementById("sel");
+cases.forEach((c,i)=>{let o=document.createElement("option");o.value=i;o.textContent="病例"+(i+1);sel.appendChild(o);});
+function render(){
+ const c=cases[idx];
+ document.getElementById("meta").textContent="第 "+(idx+1)+" / "+cases.length+" 个病例";
+ sel.value=idx;
+ document.getElementById("title").textContent=c.title;
+ document.getElementById("caseText").textContent=c.case;
+ const qs=document.getElementById("questions"); qs.innerHTML="";
+ c.questions.forEach((q,i)=>{let d=document.createElement("div");d.className="q";d.textContent=(i+1)+". "+q;qs.appendChild(d);});
+ const ans=document.getElementById("answer"); ans.textContent=c.answer; ans.style.display="none";
+ localStorage.setItem("case_idx",idx);
+ window.scrollTo(0,0);
+}
+function toggleAnswer(){const a=document.getElementById("answer");a.style.display=a.style.display==="block"?"none":"block";}
+function prevCase(){if(idx>0){idx--;render();}}
+function nextCase(){if(idx<cases.length-1){idx++;render();}}
+function goCase(){idx=Number(sel.value);render();}
+render();
+</script>
+</body>
+</html>
